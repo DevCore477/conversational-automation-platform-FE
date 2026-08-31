@@ -1,0 +1,11 @@
+{
+  "name": "mozo-minimal-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Plain HTML/CSS/JS iframe app for the Mozo App Store. Build = zip.",
+  "scripts": {
+    "dev": "node dev.mjs",
+    "build": "node build.mjs"
+  }
+}

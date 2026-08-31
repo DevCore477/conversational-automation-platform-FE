@@ -1,0 +1,5 @@
+node_modules/
+backend/.env
+frontend/dist/
+frontend/app-bundle.zip
+.DS_Store

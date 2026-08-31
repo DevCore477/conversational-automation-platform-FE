@@ -1,0 +1,254 @@
+{
+  "start": "start-node-1735866339701",
+  "flow": {
+    "nodes": [
+      {
+        "id": "start-node-1735866339701",
+        "name": "purpose_of_call_node",
+        "type": "conversation",
+        "edges": [
+          {
+            "id": "edge-1",
+            "condition": "If the user wants to book an appointment",
+            "destination_node_id": "appointment_booking_node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "If the user wants to book an appointment"
+            }
+          },
+          {
+            "id": "edge-2",
+            "condition": "If the user has another request",
+            "destination_node_id": "extract-variable-node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "If the user has another request"
+            }
+          }
+        ],
+        "instruction": {
+          "text": "Hello! How can I assist you today?",
+          "type": "prompt"
+        },
+        "start_speaker": "agent",
+        "display_position": {
+          "x": -28,
+          "y": -124
+        },
+        "interruption_sensitivity": 0
+      },
+      {
+        "id": "appointment_booking_node",
+        "name": "appointment_booking_node",
+        "type": "conversation",
+        "edges": [
+          {
+            "id": "edge-3",
+            "condition": "User selects doctor and time",
+            "destination_node_id": "appointment_selection_node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "User selects doctor and time"
+            }
+          }
+        ],
+        "instruction": {
+          "text": "Great! We have appointments available on alternate weekends only.\nOur doctors:\n- Dr Bilal (Saturday 1pm–3pm)\n- Dr Robeel (Sunday 5pm–7pm)\n- Dr Taha (Saturday 10pm–12am)\nWhich doctor and time would you like?",
+          "type": "prompt"
+        },
+        "display_position": {
+          "x": -93,
+          "y": 174
+        },
+        "interruption_sensitivity": 0
+      },
+      {
+        "id": "appointment_selection_node",
+        "name": "appointment_selection_node",
+        "type": "conversation",
+        "edges": [
+          {
+            "id": "edge-4",
+            "condition": "If user confirms appointment",
+            "destination_node_id": "collect_pet_info_node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "If user confirms appointment"
+            }
+          },
+          {
+            "id": "edge-5",
+            "condition": "If user declines appointment",
+            "destination_node_id": "extract-variable-node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "If user declines appointment"
+            }
+          }
+        ],
+        "instruction": {
+          "text": "You chose {{appointment_booking}}. Would you like to confirm this appointment?",
+          "type": "prompt"
+        },
+        "display_position": {
+          "x": 490,
+          "y": 118
+        },
+        "interruption_sensitivity": 0
+      },
+      {
+        "id": "collect_pet_info_node",
+        "name": "collect_pet_info_node",
+        "type": "conversation",
+        "edges": [
+          {
+            "id": "edge-6",
+            "condition": "Pet name provided",
+            "destination_node_id": "collect_medication_node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "Pet name provided"
+            }
+          }
+        ],
+        "instruction": {
+          "text": "Please provide the name of your pet so we can proceed with the next step.",
+          "type": "prompt"
+        },
+        "display_position": {
+          "x": 994,
+          "y": 180
+        },
+        "interruption_sensitivity": 0
+      },
+      {
+        "id": "collect_medication_node",
+        "name": "collect_medication_node",
+        "type": "conversation",
+        "edges": [
+          {
+            "id": "edge-7",
+            "condition": "If user wants to add medication",
+            "destination_node_id": "summary_with_med_node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "If user wants to add medication"
+            }
+          },
+          {
+            "id": "edge-8",
+            "condition": "If user does not want to add medication",
+            "destination_node_id": "summary_no_med_node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "If user does not want to add medication"
+            }
+          }
+        ],
+        "instruction": {
+          "text": "Do you want to add medication information?",
+          "type": "prompt"
+        },
+        "display_position": {
+          "x": 1496,
+          "y": 190
+        },
+        "interruption_sensitivity": 0
+      },
+      {
+        "id": "summary_with_med_node",
+        "name": "summary_with_med_node",
+        "type": "conversation",
+        "edges": [
+          {
+            "id": "edge-9",
+            "condition": "Proceed to end the call",
+            "destination_node_id": "end_node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "Proceed to end the call"
+            }
+          }
+        ],
+        "instruction": {
+          "text": "Thank you for providing the medication details. Your appointment has been confirmed.",
+          "type": "prompt"
+        },
+        "display_position": {
+          "x": 1127,
+          "y": 495
+        },
+        "interruption_sensitivity": 0
+      },
+      {
+        "id": "summary_no_med_node",
+        "name": "summary_no_med_node",
+        "type": "conversation",
+        "edges": [
+          {
+            "id": "edge-10",
+            "condition": "Proceed to end the call",
+            "destination_node_id": "end_node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "Proceed to end the call"
+            }
+          }
+        ],
+        "instruction": {
+          "text": "Thank you for your time. Your appointment has been confirmed without medication details.",
+          "type": "prompt"
+        },
+        "display_position": {
+          "x": 1486,
+          "y": 496
+        },
+        "interruption_sensitivity": 0
+      },
+      {
+        "id": "extract-variable-node",
+        "name": "extract_variable_node",
+        "type": "conversation",
+        "edges": [
+          {
+            "id": "edge-11",
+            "condition": "Continue",
+            "destination_node_id": "end_node",
+            "transition_condition": {
+              "type": "prompt",
+              "prompt": "Continue"
+            }
+          }
+        ],
+        "instruction": {
+          "text": "Let me note down your request.",
+          "type": "prompt"
+        },
+        "display_position": {
+          "x": 300,
+          "y": 200
+        },
+        "interruption_sensitivity": 0
+      },
+      {
+        "id": "end_node",
+        "name": "end_node",
+        "type": "end",
+        "edges": [],
+        "instruction": {
+          "text": "Thank you for calling. Goodbye!",
+          "type": "prompt"
+        },
+        "start_speaker": "agent",
+        "display_position": {
+          "x": 696,
+          "y": 827
+        },
+        "interruption_sensitivity": 0
+      }
+    ],
+    "start_node_id": "start-node-1735866339701",
+    "start_speaker": "agent"
+  },
+  "intents": {}
+}

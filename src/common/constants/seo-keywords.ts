@@ -1,0 +1,55 @@
+export const callingKeywords = {
+  primary: [
+    "AI calling software",
+    "AI phone calling software",
+    "AI phone agent",
+    "AI voice calling platform",
+    "AI call automation",
+    "AI outbound calling software",
+    "AI calling agent",
+    "AI phone assistant",
+    "AI automated calling system",
+    "AI phone bot",
+  ],
+  secondary: [
+    "AI appointment booking calls",
+    "AI sales calling software",
+    "AI customer service phone bot",
+    "AI lead qualification calls",
+    "AI survey calling software",
+    "AI reminder call software",
+    "AI follow up call automation",
+  ],
+};
+
+export const researchKeywords = {
+  primary: [
+    "AI research assistant",
+    "AI research tool",
+    "deep research AI",
+    "AI agent for research",
+    "AI web research",
+    "autonomous research AI",
+    "AI competitor research",
+    "AI market research tool",
+    "AI research platform",
+    "AI business intelligence",
+  ],
+  secondary: [
+    "ChatGPT alternative for research",
+    "Perplexity alternative",
+    "best AI research tool",
+    "AI for due diligence",
+    "AI research agent",
+    "AI knowledge agent",
+    "AI research automation",
+    "AI-powered research platform",
+  ],
+  highIntent: [
+    "best AI research tool for businesses",
+    "AI market research software",
+    "AI competitor analysis software",
+    "AI research platform for startups",
+    "AI research agent for consulting firms",
+  ],
+};
