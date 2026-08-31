@@ -1,0 +1,17 @@
+{
+  "name": "mozo-minimal-backend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Minimal backend for a Mozo App Store app: holds OAuth secret, proxies API calls, receives webhooks.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "dev":   "node --env-file=.env --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

@@ -1,0 +1,361 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
+import { OpenAIModel } from "@/common/enums/model.types";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { VoiceSelector } from "@/components/ui/voice-selector";
+import { getErrorMessage } from "@/lib/get-error-message";
+import { useVoiceStore } from "@/store/voice.store";
+import { type CallScript } from "@/types/script.types";
+import { useThemeStore } from "@/store/theme.store";
+import { updateScript } from "../actions";
+
+const scriptSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters"),
+  script: z.string().min(10, "Script must be at least 10 characters"),
+  description: z.string().optional(),
+  firstMessage: z.string().optional(),
+  model: z.nativeEnum(OpenAIModel).default(OpenAIModel.GPT_4O_MINI).optional(),
+  voiceId: z.string().optional(),
+  callType: z.enum(["inbound", "outbound", "both"]),
+  isActive: z.boolean().default(true).optional(),
+  companyId: z.string().optional(),
+});
+
+type ScriptFormValues = z.infer<typeof scriptSchema>;
+
+interface EditScriptDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  script: CallScript | null;
+  onSuccess?: () => void | Promise<void>;
+  companyId: string | null;
+}
+
+export function EditScriptDialog({
+  open,
+  onOpenChange,
+  script,
+  onSuccess,
+  companyId,
+}: EditScriptDialogProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { theme, fetchTheme } = useThemeStore();
+  const {
+    voices,
+    defaultVoiceId,
+    fetchVoices,
+    isLoading: voicesLoading,
+  } = useVoiceStore();
+
+  const form = useForm<ScriptFormValues>({
+    resolver: zodResolver(scriptSchema),
+    defaultValues: {
+      name: "",
+      script: "",
+      description: "",
+      firstMessage: "",
+      model: OpenAIModel.GPT_4O_MINI,
+      voiceId: "",
+      callType: "both",
+      isActive: true,
+    },
+  });
+
+  // Fetch voices on mount
+  useEffect(() => {
+    if (voices.length === 0 && !voicesLoading) {
+      fetchVoices().catch(() => {
+        // Silently fail, voices are optional
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Reset form when script changes or dialog opens
+  useEffect(() => {
+    if (script && open) {
+      form.reset({
+        name: script.name,
+        script: script.script,
+        description: script.description || "",
+        firstMessage: script.firstMessage || "",
+        model: script.model as OpenAIModel,
+        voiceId: script.voiceId || "",
+        callType: script.callType,
+        isActive: script.isActive,
+      });
+    }
+  }, [script, open, form]);
+
+  const onSubmit = async (data: ScriptFormValues) => {
+    if (!script) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Create FormData for Server Action
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("script", data.script);
+      formData.append("callType", data.callType);
+      if (data.description) formData.append("description", data.description);
+      if (data.firstMessage) formData.append("firstMessage", data.firstMessage);
+      formData.append("isActive", data.isActive ? "true" : "false");
+      formData.append("model", data.model ?? "gpt-4");
+      if (data.voiceId) formData.append("voiceId", data.voiceId);
+
+      const result = await updateScript(script.id, formData);
+
+      if (result.success) {
+        toast.success("Script updated successfully");
+        onOpenChange(false);
+        form.reset();
+        await onSuccess?.();
+      } else {
+        toast.error(result.error || "Failed to update script");
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to update script"));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!script) {
+    return null;
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto" preventAutoFocus>
+        <DialogHeader className="text-start">
+          <DialogTitle>Edit Script</DialogTitle>
+          <DialogDescription>Update your call script details</DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid  md:grid-cols-2 gap-5 gap-y-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Script Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Welcome Script" {...field} showLeftBorder = {false}/>
+                  </FormControl>
+                  {/* <FormDescription>
+                    A descriptive name for this script
+                  </FormDescription> */}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+              <FormField
+                control={form.control}
+                name="callType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Call Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                      
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger showLeftBorder = {false}>
+                          <SelectValue placeholder="Select call type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="inbound">Inbound</SelectItem>
+                        <SelectItem value="outbound">Outbound</SelectItem>
+                        <SelectItem value="both">Both</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="model"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>AI Model</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger showLeftBorder = {false}>
+                          <SelectValue placeholder="Select model" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={OpenAIModel.GPT_4O_MINI}>
+                          GPT-4o Mini
+                        </SelectItem>
+                        <SelectItem value={OpenAIModel.GPT_5_NANO}>
+                          GPT-5 Nano
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+            <FormField
+              control={form.control}
+              name="voiceId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Voice (Optional)</FormLabel>
+                  <FormControl>
+                    <VoiceSelector
+                      voices={voices}
+                      defaultVoiceId={defaultVoiceId}
+                      value={field.value}
+                      onValueChange={(value) => {
+                        field.onChange(value === "default" ? undefined : value);
+                      }}
+                      disabled={voicesLoading}
+                      placeholder={
+                        voicesLoading
+                          ? "Loading voices..."
+                          : "Select a voice (optional)"
+                      }
+                      showDefault
+                    />
+                  </FormControl>
+                  {/* <FormDescription>
+                    Choose a voice from ElevenLabs or use default (click play to
+                    preview)
+                  </FormDescription> */}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description (Optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Brief description of this script"
+                      {...field}
+                      showLeftBorder = {false}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="firstMessage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Message (Optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Initial greeting message"
+                      {...field}
+                      maxLength={255}
+                      showLeftBorder = {false}
+                    />
+                  </FormControl>
+                  {/* <FormDescription>
+                    The first message to send when call starts (max 255
+                    characters)
+                  </FormDescription> */}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            </div>
+            <FormField
+              control={form.control}
+              name="script"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Script Content</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter your call script content here..."
+                      className="text-xs lg:text-sm min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    The main script content that will guide the AI conversation
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter className="flex-row justify-end items-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+                className="rounded-full"
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting} 
+                showWave waveColor={theme?.primaryColor} className="rounded-full">
+                {isSubmitting ? "Updating..." : "Update Script"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

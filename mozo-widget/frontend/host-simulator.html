@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mozo Host Simulator (dev only)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; background: #0f172a; color: #f8fafc; }
+    .bar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+    input { padding: 6px 10px; border-radius: 8px; border: 1px solid #475569; background: #1e293b; color: #f8fafc; font-size: 13px; }
+    button { padding: 7px 14px; border: 0; border-radius: 8px; background: #0f766e; color: #fff; font-size: 13px; cursor: pointer; }
+    iframe { width: 100%; height: 80vh; border: 1px solid #334155; border-radius: 12px; background: #fff; }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <strong>Mozo Host Simulator</strong>
+    <span style="opacity:.6">— not part of the app bundle, dev-only</span>
+    <input id="venueId" type="text" value="venue_dev_1" />
+    <button id="send">Send mozo:init</button>
+  </div>
+
+  <iframe id="widgetFrame" src="/widget/index.html" title="widget"></iframe>
+
+  <script>
+    var frame = document.getElementById("widgetFrame");
+
+    function sendInit() {
+      var venueId = document.getElementById("venueId").value.trim() || "venue_dev_1";
+      frame.contentWindow.postMessage({
+        type: "mozo:init",
+        payload: {
+          session: {
+            token: "dev-fake-session-token",
+            context: {
+              installation: { id: "inst_dev_1", venue_id: venueId }
+            }
+          }
+        }
+      }, "*");
+    }
+
+    document.getElementById("send").addEventListener("click", sendInit);
+    frame.addEventListener("load", function () {
+      setTimeout(sendInit, 200);
+    });
+
+    window.addEventListener("message", function (event) {
+      if (event.source !== frame.contentWindow) return;
+      console.log("[host-simulator] received from widget:", event.data);
+    });
+  </script>
+</body>
+</html>

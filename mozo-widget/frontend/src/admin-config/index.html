@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="/v4/app-store/sdk/mozo-sdk.js"></script>
+
+  <title>Hexa AI - Mozo Admin Configuration</title>
+
+
+  <style>
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+
+    body{
+      font-family:"Segoe UI",Arial,sans-serif;
+      background:#f8fafc;
+      color:#0f172a;
+      padding:24px;
+    }
+
+
+    .shell{
+      max-width:720px;
+      margin:auto;
+      display:grid;
+      gap:16px;
+    }
+
+
+    .hero{
+      background:linear-gradient(135deg,#0f172a,#0369a1);
+      color:white;
+      border-radius:20px;
+      padding:22px;
+    }
+
+
+    .hero h1{
+      margin-top:8px;
+      font-size:26px;
+    }
+
+
+    .hero p{
+      margin-top:10px;
+      color:#dbeafe;
+      font-size:14px;
+      line-height:1.5;
+    }
+
+
+    .card{
+      background:white;
+      border:1px solid #e2e8f0;
+      border-radius:16px;
+      padding:18px;
+    }
+
+
+    .card h2{
+      font-size:16px;
+    }
+
+
+    .card p{
+      margin-top:6px;
+      font-size:13px;
+      color:#475569;
+    }
+
+
+    .field{
+
+      margin-top:12px;
+      display:grid;
+      gap:6px;
+
+    }
+
+
+    label{
+
+      font-size:11px;
+      font-weight:700;
+      text-transform:uppercase;
+      color:#64748b;
+
+    }
+
+
+    input{
+
+      width:100%;
+      padding:10px 12px;
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      font-size:14px;
+
+    }
+
+
+    .actions{
+
+      margin-top:14px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+
+    }
+
+
+
+    button{
+
+      border:0;
+      border-radius:10px;
+      padding:10px 14px;
+      font-weight:700;
+      cursor:pointer;
+
+    }
+
+
+    .primary{
+
+      background:#0f766e;
+      color:white;
+
+    }
+
+
+    .secondary{
+
+      background:#e2e8f0;
+
+    }
+
+
+
+    pre{
+
+      background:#0f172a;
+      color:#e2e8f0;
+      padding:12px;
+      border-radius:12px;
+      margin-top:12px;
+      font-size:12px;
+      overflow:auto;
+      min-height:200px;
+
+    }
+
+
+    .log{
+
+      margin-top:12px;
+      font-size:12px;
+
+    }
+
+
+    .log-success{
+
+      color:#047857;
+
+    }
+
+
+    .log-error{
+
+      color:#b91c1c;
+
+    }
+
+
+  </style>
+
+</head>
+
+
+
+<body>
+
+
+<main class="shell">
+
+
+  <section class="hero">
+
+    <h1>
+      Hexa AI Admin Configuration
+    </h1>
+
+
+    <p>
+      Configure Hexa AI integration with Mozo.
+      All Mozo communication is handled securely through your backend.
+    </p>
+
+
+  </section>
+
+
+
+
+  <section class="card">
+
+
+    <h2>
+      1. Backend Connection
+    </h2>
+
+
+    <p>
+      Backend URL and venue configuration.
+    </p>
+
+
+
+    <div class="field">
+
+      <label>
+        Backend URL
+      </label>
+
+
+      <input
+              id="backendUrl"
+              placeholder="https://api.example.com/mozo"
+      />
+
+
+    </div>
+
+
+
+    <div class="field">
+
+      <label>
+        Venue ID
+      </label>
+
+
+      <input
+              id="venueId"
+      />
+
+
+    </div>
+
+
+
+    <div class="actions">
+
+
+      <button
+              class="primary"
+              id="connect">
+
+        Connect
+
+      </button>
+
+
+    </div>
+
+
+
+    <div id="log" class="log"></div>
+
+
+  </section>
+
+
+
+
+
+  <section class="card">
+
+
+    <h2>
+      2. Mozo Session
+    </h2>
+
+
+    <p>
+      Current Mozo iframe authentication status.
+    </p>
+
+
+    <p id="sessionStatus">
+
+      Initializing Mozo...
+
+    </p>
+
+
+  </section>
+
+
+
+
+
+  <section class="card">
+
+
+    <h2>
+      3. Hexa AI Activity
+    </h2>
+
+
+    <p>
+      Load recent AI handled calls.
+    </p>
+
+
+    <div class="actions">
+
+
+      <button
+              class="secondary"
+              id="loadActivity">
+
+        Load Activity
+
+      </button>
+
+
+    </div>
+
+
+  </section>
+
+
+
+
+
+  <section class="card">
+
+
+    <h2>
+      4. Mozo Data
+
+    </h2>
+
+
+    <p>
+      Read menu and order information.
+    </p>
+
+
+
+    <div class="actions">
+
+
+      <button
+              class="primary"
+              id="loadMenu">
+
+        Load Menu
+
+      </button>
+
+
+
+      <button
+              class="primary"
+              id="loadOrders">
+
+        Load Orders
+
+      </button>
+
+
+    </div>
+
+
+  </section>
+
+
+
+
+
+  <section class="card">
+
+
+    <h2>
+      Latest Response
+    </h2>
+
+
+    <pre id="response">
+{}
+</pre>
+
+
+  </section>
+
+
+
+</main>
+
+
+
+
+
+
+<script>
+
+
+  const STORAGE={
+
+    backendUrl:
+            "hexa-mozo-backend",
+
+    venueId:
+            "hexa-mozo-venue"
+
+  };
+
+
+
+  let mozoSession=null;
+
+
+
+
+  function $(id){
+
+    return document.getElementById(id);
+
+  }
+
+
+
+
+  function log(message,type="success"){
+
+
+    const div=document.createElement("div");
+
+    div.className=
+            "log-"+type;
+
+
+    div.textContent=
+            `[${new Date().toLocaleTimeString()}] ${message}`;
+
+
+    $("log").prepend(div);
+
+
+  }
+
+
+
+
+  function renderResponse(data){
+
+
+    $("response").textContent=
+            JSON.stringify(data,null,2);
+
+
+  }
+
+
+
+
+
+  function backendUrl(){
+
+
+    return $("backendUrl")
+            .value
+            .replace(/\/+$/,"");
+
+
+  }
+
+
+
+
+
+  async function initMozo(){
+
+
+    try{
+
+
+      if(!window.Mozo){
+
+        throw new Error(
+                "Mozo SDK not loaded"
+        );
+
+      }
+
+
+
+      mozoSession =
+              await window.Mozo.initialize();
+
+
+
+      console.log(
+              "Mozo Session",
+              mozoSession
+      );
+
+
+
+      $("sessionStatus")
+              .textContent =
+              "Mozo session initialized";
+
+
+      log(
+              "Mozo initialized"
+      );
+
+
+
+    }
+
+
+    catch(error){
+
+
+      $("sessionStatus")
+              .textContent =
+              "Mozo initialization failed";
+
+
+      log(
+              error.message,
+              "error"
+      );
+
+
+    }
+
+
+  }
+
+
+
+
+  async function callBackend(
+          path,
+          options={}
+  ){
+
+
+
+    if(!backendUrl()){
+
+      throw new Error(
+              "Backend URL missing"
+      );
+
+    }
+
+
+
+    const headers={
+
+      "Content-Type":
+              "application/json"
+
+    };
+
+
+
+    if(mozoSession){
+
+      headers.Authorization =
+              "Bearer "+
+              (
+                      mozoSession.token ||
+                      mozoSession.accessToken
+              );
+
+    }
+
+
+
+
+    const response =
+            await fetch(
+                    backendUrl()+path,
+                    {
+
+                      ...options,
+
+                      headers
+
+                    }
+
+            );
+
+
+
+    const data =
+            await response.json()
+                    .catch(()=>({}));
+
+
+
+    if(!response.ok){
+
+      throw new Error(
+              data.error ||
+              "Request failed"
+      );
+
+    }
+
+
+
+    return data;
+
+
+  }
+
+
+
+
+
+
+
+  function loadStorage(){
+
+
+    $("backendUrl").value =
+            localStorage.getItem(
+                    STORAGE.backendUrl
+            )
+            ||
+            "https://api.gethexa.ai/mozo";
+
+
+
+    $("venueId").value =
+            localStorage.getItem(
+                    STORAGE.venueId
+            )
+            ||
+            "";
+
+
+  }
+
+
+
+
+  function saveStorage(){
+
+
+    localStorage.setItem(
+            STORAGE.backendUrl,
+            $("backendUrl").value
+    );
+
+
+    localStorage.setItem(
+            STORAGE.venueId,
+            $("venueId").value
+    );
+
+
+  }
+
+
+
+
+
+
+
+  $("connect")
+          .onclick =
+          async()=>{
+
+
+            try{
+
+
+              saveStorage();
+
+
+
+              const data =
+                      await callBackend(
+                              "/auth/token",
+                              {
+
+                                method:"POST",
+
+                                body:
+                                        JSON.stringify({
+
+                                          venue_id:
+                                          $("venueId").value
+
+                                        })
+
+
+                              }
+
+                      );
+
+
+
+              renderResponse(data);
+
+
+              log(
+                      "Venue connected successfully"
+              );
+
+
+            }
+            catch(error){
+
+              log(
+                      error.message,
+                      "error"
+              );
+
+            }
+
+
+          };
+
+
+
+
+
+
+
+
+  $("loadActivity")
+          .onclick =
+          async()=>{
+
+
+            try{
+
+
+              const data =
+                      await callBackend(
+                              "/hexaai/activity?venue_id="+
+                              encodeURIComponent(
+                                      $("venueId").value
+                              )
+                      );
+
+
+              renderResponse(data);
+
+
+              log(
+                      "Activity loaded"
+              );
+
+
+            }
+            catch(error){
+
+
+              log(
+                      error.message,
+                      "error"
+              );
+
+
+            }
+
+
+
+          };
+
+
+
+
+
+
+
+  $("loadMenu")
+          .onclick =
+          async()=>{
+
+
+            try{
+
+
+              const data =
+                      await callBackend(
+                              "/menu?venue_id="+
+                              encodeURIComponent(
+                                      $("venueId").value
+                              )
+                      );
+
+
+
+              renderResponse(data);
+
+
+              log(
+                      "Menu loaded"
+              );
+
+
+            }
+            catch(error){
+
+
+              log(
+                      error.message,
+                      "error"
+              );
+
+
+            }
+
+
+          };
+
+
+
+
+
+
+
+  $("loadOrders")
+          .onclick =
+          async()=>{
+
+
+            try{
+
+
+              const data =
+                      await callBackend(
+                              "/orders?venue_id="+
+                              encodeURIComponent(
+                                      $("venueId").value
+                              )
+                      );
+
+
+
+              renderResponse(data);
+
+
+              log(
+                      "Orders loaded"
+              );
+
+
+            }
+            catch(error){
+
+
+              log(
+                      error.message,
+                      "error"
+              );
+
+
+            }
+
+
+          };
+
+
+
+
+
+
+
+  loadStorage();
+
+  initMozo();
+
+
+
+</script>
+
+
+</body>
+
+</html>

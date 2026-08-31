@@ -1,0 +1,93 @@
+{
+  "start": "welcome",
+  "nodes": {
+    "welcome": {
+      "say": {
+        "template": "Hello {{name}}! Thanks for calling {{company}}. How can I help you today?"
+      },
+      "listen": {
+        "intent_scope": ["support", "sales", "human"],
+        "fallback": "fallback"
+      },
+      "transitions": [
+        { "on_intent": "support", "to": "support_flow" },
+        { "on_intent": "sales", "to": "sales_flow" },
+        { "on_intent": "human", "to": "handover" }
+      ]
+    },
+    "support_flow": {
+      "say": {
+        "template": "Sure, I can help with support. Please briefly describe your issue."
+      },
+      "listen": {
+        "capture_slot": "issue",
+        "next": "support_confirm"
+      }
+    },
+    "support_confirm": {
+      "say": {
+        "template": "Thanks. I have noted your issue as: {{issue}}. Our team will follow up shortly."
+      },
+      "end": true
+    },
+    "sales_flow": {
+      "say": {
+        "template": "Great! Are you interested in pricing or a product demo?"
+      },
+      "listen": {
+        "intent_scope": ["pricing", "demo"],
+        "fallback": "sales_flow"
+      },
+      "transitions": [
+        { "on_intent": "pricing", "to": "pricing" },
+        { "on_intent": "demo", "to": "demo" }
+      ]
+    },
+    "pricing": {
+      "say": {
+        "template": "Our pricing depends on your needs. A sales agent will contact you shortly."
+      },
+      "end": true
+    },
+    "demo": {
+      "say": {
+        "template": "Perfect. I will arrange a demo for you."
+      },
+      "end": true
+    },
+    "handover": {
+      "say": {
+        "template": "No problem. I am transferring you to a human agent now."
+      },
+      "tool": {
+        "name": "transfer_to_human"
+      },
+      "end": true
+    },
+    "fallback": {
+      "say": {
+        "template": "Sorry, I didn't quite catch that. Could you please repeat?"
+      },
+      "listen": {
+        "next": "welcome"
+      }
+    }
+  },
+  "intents": {
+    "support": {
+      "rules": ["support", "problem", "issue", "help"]
+    },
+    "sales": {
+      "rules": ["sales", "buy", "purchase", "pricing"]
+    },
+    "human": {
+      "rules": ["human", "agent", "representative"]
+    },
+    "pricing": {
+      "rules": ["price", "cost", "pricing"]
+    },
+    "demo": {
+      "rules": ["demo", "trial", "show"]
+    }
+  }
+}
